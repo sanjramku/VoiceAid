@@ -12,6 +12,13 @@
 - ✅ Light/Dark mode toggle
 - ✅ Fully offline fallback supported
 
+## Target Users:
+
+- People with ALS, cerebral palsy, and non-verbal autism
+- ICU patients or post-surgery individuals
+- The elderly with age-related speech impairments
+- People with voice loss (e.g. laryngectomy)
+- People not very fluent in English and just know a few words
 
 ## 📦 Installation
 
