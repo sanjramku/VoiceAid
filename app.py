@@ -84,11 +84,13 @@ tone_descriptions = {
 st.info(f"💡 Tone preview: {tone_descriptions[tone]}")
 
 # ✅ Load Gemini API key
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if not GEMINI_API_KEY:
-    st.error("❌ Gemini API key not set. Please run `export GEMINI_API_KEY=your_key` in terminal before running.")
+try:
+    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+except KeyError:
+    st.error("❌ Gemini API key not found in Streamlit secrets. Please add it in `.streamlit/secrets.toml` or Streamlit Cloud settings.")
     st.stop()
 
+# ✅ Configure Gemini model
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
@@ -124,17 +126,21 @@ Rewritten:
 
                 with st.spinner("Speaking..."):
                     if has_internet():
-                        tts = gTTS(rewritten)
-                        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-                            tts.save(fp.name)
-                            playsound(fp.name)
+                        try:
+                            tts = gTTS(rewritten)
+                            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+                                tts.save(fp.name)
+                                st.audio(fp.name, format="audio/mp3")  # Compatible with Streamlit Cloud
+                        except Exception as e:
+                            st.error("⚠️ Unable to play audio on this platform.")
+                            st.exception(e)
                     else:
                         engine = pyttsx3.init()
                         engine.setProperty('rate', 150)
                         engine.say(rewritten)
                         engine.runAndWait()
             except Exception as e:
-                st.error("⚠️ Something went wrong while connecting to Gemini or TTS.")
+                st.error("⚠️ Something went wrong while connecting to Gemini or generating speech.")
                 st.exception(e)
 
 # 🔍 Filter & sort options
@@ -174,7 +180,7 @@ if st.session_state.history:
                             tts = gTTS(entry["message"])
                             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                                 tts.save(fp.name)
-                                playsound(fp.name)
+                                st.audio(fp.name, format="audio/mp3")
                         else:
                             engine = pyttsx3.init()
                             engine.setProperty('rate', 150)
