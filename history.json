@@ -1,0 +1,14 @@
+[
+  {
+    "tone": "Friendly",
+    "message": "Could you please give me a hand?",
+    "favorite": true,
+    "timestamp": "2025-07-10T16:04:29.838642"
+  },
+  {
+    "tone": "Friendly",
+    "message": "Hey, could you grab my jacket?  It's chilly out there!",
+    "favorite": true,
+    "timestamp": "2025-07-10T16:50:23.898518"
+  }
+]
