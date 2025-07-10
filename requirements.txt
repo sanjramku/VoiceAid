@@ -1,5 +1,4 @@
 streamlit
 google-generativeai
 gTTS
-playsound==1.2.2
 pyttsx3
