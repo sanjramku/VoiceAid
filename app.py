@@ -4,19 +4,18 @@ import os
 import socket
 import json
 from gtts import gTTS
-from playsound import playsound
 import tempfile
 import pyttsx3
 from datetime import datetime
 
-# 🔧 Page configuration
+# 🛠️ Page configuration
 st.set_page_config(page_title="VoiceAid", layout="centered")
 st.title("🗣️ VoiceAid - AI Speech Assistant")
 
 # 🌙 Dark mode toggle
-dark_mode = st.checkbox("🌃 Dark Mode", value=False)
+dark_mode = st.checkbox("🌓 Dark Mode", value=False)
 
-# 💅 Apply dark mode CSS
+# 💄 Apply dark mode CSS
 if dark_mode:
     st.markdown("""
         <style>
@@ -51,30 +50,26 @@ def has_internet():
     except OSError:
         return False
 
-# 📂 File path for history
+# 💾 History file
 HISTORY_FILE = "history.json"
 
-# 📂 Load history from JSON file
 def load_history():
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
             return json.load(f)
     return []
 
-# 📂 Save history to JSON file
 def save_history(history):
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=2)
 
-# 🔄 Initialize history in session state
 if "history" not in st.session_state:
     st.session_state.history = load_history()
 
-# 🧐 Input fields
+# 🧠 Input
 user_input = st.text_input("Type a short message you'd like to say:", placeholder="e.g. help tired now")
 tone = st.selectbox("Choose a tone:", ["Neutral", "Polite", "Friendly", "Urgent"])
 
-# 💡 Tone description
 tone_descriptions = {
     "Neutral": "A clear and straightforward voice, without emotion.",
     "Polite": "Softened, courteous and respectful tone.",
@@ -83,7 +78,7 @@ tone_descriptions = {
 }
 st.info(f"💡 Tone preview: {tone_descriptions[tone]}")
 
-# ✅ Load Gemini API key securely from Streamlit secrets
+# ✅ Load Gemini API key
 try:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 except KeyError:
@@ -93,22 +88,20 @@ except KeyError:
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
-# 🎯 Main logic
+# 🎯 Rewrite and speak
 if st.button("🔁 Rewrite and Speak"):
     if not user_input:
         st.warning("Please enter a message.")
     else:
         with st.spinner("Rewriting with Gemini..."):
             prompt = f"""
-You are an assistive communication AI helping someone with a speech impairment express a message.
+You are an assistive AI helping someone with a speech impairment communicate more effectively.
 
-Your task: Rewrite the message below in a more **{tone.lower()}** tone for **spoken communication**.
-- Make the sentence sound natural and expressive for speaking.
-- Use vocabulary and rhythm that feels emotionally appropriate to the tone.
-- Keep it short, but powerful.
-- Return only one sentence. No explanations.
+Your task is to rewrite the message below so that it sounds more appropriate for **spoken communication** in a **{tone.lower()}** tone. Respond with just **one clear and natural sentence**.
 
-Original message: \"{user_input}\"
+Do not add explanations or multiple options.
+
+Original message: "{user_input}"
 Rewritten:
 """
             try:
@@ -131,7 +124,8 @@ Rewritten:
                         tts = gTTS(rewritten)
                         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                             tts.save(fp.name)
-                            playsound(fp.name)
+                            with open(fp.name, "rb") as audio_file:
+                                st.audio(audio_file.read(), format="audio/mp3")
                     else:
                         engine = pyttsx3.init()
                         engine.setProperty('rate', 150)
@@ -141,7 +135,7 @@ Rewritten:
                 st.error("⚠️ Something went wrong while connecting to Gemini or TTS.")
                 st.exception(e)
 
-# 🔍 Filter & sort options
+# 🔍 Filter & sort
 with st.expander("🔍 Filter History"):
     search_query = st.text_input("Search by keyword")
     tone_filter = st.selectbox("Filter by tone", ["All"] + list(tone_descriptions.keys()))
@@ -152,13 +146,11 @@ if st.session_state.history:
     st.subheader("🕓 Previous Messages")
     history = st.session_state.history
 
-    # Filtering
     if search_query:
         history = [h for h in history if search_query.lower() in h["message"].lower()]
     if tone_filter != "All":
         history = [h for h in history if h["tone"] == tone_filter]
 
-    # Sorting
     if sort_by == "Newest":
         history = sorted(history, key=lambda x: x["timestamp"], reverse=True)
     elif sort_by == "Oldest":
@@ -178,7 +170,8 @@ if st.session_state.history:
                             tts = gTTS(entry["message"])
                             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
                                 tts.save(fp.name)
-                                playsound(fp.name)
+                                with open(fp.name, "rb") as audio_file:
+                                    st.audio(audio_file.read(), format="audio/mp3")
                         else:
                             engine = pyttsx3.init()
                             engine.setProperty('rate', 150)
@@ -198,7 +191,7 @@ if st.session_state.history:
                 save_history(st.session_state.history)
                 st.rerun()
 
-                
+
 #source venv/bin/activate
 #export GEMINI_API_KEY="your-api-key-here"
 #cd /Users/sanjanaramkumar/Downloads/Python/VoiceAid
