@@ -1,4 +1,5 @@
 streamlit
-google-generativeai
-gTTS
-pyttsx3
+gtts
+langchain
+langchain-google-genai
+
