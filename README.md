@@ -57,7 +57,7 @@ voiceaid/
 ├── app.py                # Main Streamlit app
 ├── tone_utils.py         # Tone rewriting via Gemini
 ├── tts_utils.py          # TTS engine (Google and offline)
-├── history_utils.py      # Message history management (save, delete, favorites)
+├── history_utils.py      # Message history management (save, delete, favourites)
 ├── ui_utils.py           # UI helpers (filters, dropdowns, dark mode)
 ├── data/
 │   └── history.json      # Stores all rewritten messages
@@ -69,7 +69,7 @@ voiceaid/
 
  Text-to-speech with online/offline fallback
 
- Message history with favorites
+ Message history with favourites
 
  Filters and sorting
 
@@ -78,7 +78,7 @@ voiceaid/
  Multi-language TTS (future)
 
 🙌 Credits
-Built with ❤️ using Streamlit, Google Gemini API, and Python.
+Built with Streamlit, Google Gemini API, and Python.
 
 📜 License
 MIT License — free to use and modify.
